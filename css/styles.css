@@ -1,0 +1,129 @@
+/* General styling */
+body {
+    font-family: 'Radley', serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #36a9e0; /* Blue font color */
+    display: flex;
+    height: 100vh;
+    flex-direction: row;
+}
+
+/* Sidebar for navigation */
+.sidebar {
+    background-color: #1a0e58;
+    color: #36a9e0;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.sidebar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Fraunces', serif;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar ul li {
+    text-align: left;
+}
+
+.sidebar ul li a {
+    color: #36a9e0;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sidebar ul li a:hover {
+    background-color: #231670;
+}
+
+.sidebar button {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.sidebar button:hover {
+    background-color: #ccc;
+}
+
+/* Main content */
+.content {
+    padding: 20px;
+    width: calc(100% - 200px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.content h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    font-family: 'Fraunces', serif;
+}
+
+/* Chart container */
+.chart-container {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 800px;
+    min-height: 400px;
+    margin-bottom: 20px;
+}
+
+/* Canvas styling */
+canvas {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto;
+    max-width: 800px;
+    min-height: 400px;
+}
+
+/* Form input adjustments */
+#statistics input, #analysis input {
+    margin: 5px 0;
+    padding: 5px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#statsOutput p, #analysis ul {
+    margin: 5px 0;
+}
+
+#analysis ul {
+    list-style: none;
+    padding: 0;
+}
+
+#analysis ul li {
+    margin: 5px 0;
+}

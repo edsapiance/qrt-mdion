@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRT</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
+    <style>
+        body {
+            background-color: #f4f4f4; /* White background to match the p5.js sketch */
+            color: #000000; /* Adjust text color if needed for better contrast */
+        }
+        #sketch-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; /* Increase height for a larger sketch */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">CONTENTS</div>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+			<li><a href="cv.html">Resume</a></li>
+            <li><a href="qtrs.html">QTRs => Quant Total Return systems</a></li>
+            <li><a href="realized-track-record.html">Realized Track Record to 2024-10-22</a></li>
+            <li><a href="pl-simulation.html">PL Generation Simulation</a></li>
+			<li><a href="keys.html" style="color: #FFFF00; font-weight: bold;">KEY POINTS</a></li>
+			<li><a href="risk.html">QRT's risk metrics</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <h1 style="color: #36a9e0;">QRT // Edmond Turquieh</h1>
+		<p style="color: #36a9e0; font-weight: bold;">Framework For Effective Strategic Partnership ⇔ QTRs</p>
+
+        <!-- Move sketch below the paragraph -->
+        <div id="sketch-container">
+            <!-- The sketch will be rendered here -->
+        </div>
+    </div>
+
+    <script>
+       const framesToRecord = 721
+const makeVid = false
+
+let capturer
+let capturing = false
+let thisCanvas
+
+function setup() {
+	capturer = new CCapture( { format: 'webm' } )
+	
+	//thisCanvas = createCanvas(512, 512, WEBGL)
+    mySize = min(windowWidth, windowHeight);
+    margin = mySize / 100;
+    thisCanvas = createCanvas(windowWidth, windowHeight * 1.0, WEBGL);
+    thisCanvas.parent('sketch-container');
+	ortho(-width / 2, width / 2, height / 2, -height / 2, -1200, 2048)
+	// perspective()
+	angleMode(DEGREES)
+	strokeWeight(1)
+}
+
+function draw() {
+	if (!capturing && makeVid) {
+		capturer.start()
+		capturing = true
+	}
+	const myVal = frameCount
+	
+	background(244)
+	pointLight(255, 255, 255, width / 2, height / 2, width / 2);
+	pointLight(255, 255, 255, width / 2, height / 2, -width / 2);
+	ambientLight(90)
+
+	rotateX(45)
+	rotateY(45)
+	const cubeCount = 5
+	
+	//gridStep = 20
+	//const offsetScale = map(cos(frameCount / 2), 1, -1, 30, 180)
+    gridStep = 40; // Double the previous gridStep of 20
+    const offsetScale = map(cos(frameCount / 2), 1, -1, 60, 360); // Adjust the scale to match the larger gridStep
+
+	
+	for (let x = -cubeCount; x <= cubeCount; x += 1) {
+		for (let y = -cubeCount; y <= cubeCount; y += 1) {
+			for (let z = -cubeCount; z <= cubeCount; z += 1) {
+				if (x === -cubeCount || y === cubeCount || z === cubeCount) {
+					const realX = x * gridStep
+					const realY = y * gridStep
+					const realZ = z * gridStep
+					push()
+					translate(realX, realY, realZ)
+					// Set the fill color to blue
+					fill(54, 169, 224);
+					const xSize = map(x, -cubeCount, cubeCount, 0, offsetScale)
+					const ySize = map(y, -cubeCount, cubeCount, 0, offsetScale)
+					const zSize = map(z, -cubeCount, cubeCount, 0, offsetScale)
+					const sizeFactor = map(cos((frameCount * 2) + (xSize + ySize + zSize)), 1, -1, 0, 1)
+
+					box(gridStep * sizeFactor)
+					pop()
+				}
+			}
+		}
+	}
+	
+	if (makeVid) {
+		capturer.capture(thisCanvas.canvas)
+
+		if (frameCount === framesToRecord) {
+			capturer.stop();
+			capturer.save();
+		}
+	}
+}
+    </script>
+</body>
+</html>
