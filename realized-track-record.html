@@ -3,12 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realized Track Record</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <title>risk</title>
     <link rel="stylesheet" href="css/styles.css">
-    <!-- Include Chart.js and date adapter -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+    <style>
+        body {
+            font-family: 'Radley', serif;
+            margin: 0;
+            background-color: #f4f4f4f4;
+            color: #000000; /* Blue font color */
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #0056b3; /* A refined deep blue for emphasis */
+        }
+        .subtle {
+            color: #666; /* A soft gray for more delicate text */
+            font-style: italic;
+        }
+        .invitation {
+            color: #8B0000; /* A deep crimson for a sophisticated touch */
+            font-weight: bold;
+        }
+        .content ul li {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -22,398 +46,51 @@
             <li><a href="risk.html">QRT's risk metrics</a></li>
         </ul>
     </div>
-    <main class="content">
+
+    <div class="content">
         <h1>Realized Track Record</h1>
-        <div class="chart-container">
-            <canvas id="plChart"></canvas>
+        <div class="container">
+
+            <!-- Add your content here -->
+            <h2>QRT Real vs model without fees</h2>
+            <p>The chart below represents the accumulated PnL net of execution fees 
+                <span style="color: slategrey;background-color: #fff;">(QRT cumulative Net PnL)</span> traded in QRT's paper lab 
+                since August 31st 2023 extracted from the QSec_Detailed_DP_YYYY-MM-DD.xlsx, the effective start of our evaluation.<br><br>
+                In gold, we have the 'theoretical' cumulative gross PnL 
+                <span style="color: gold;background-color: #fff;">(Theo cumulative Gross PnL)</span> of the tracked paper model. Some remarks:<br>
+                - Perfect execution.<br>
+                - No execution fees.<br>
+                - We can see how the model performed since October 2nd 2024.<br><br>
+                <iframe src="qsec_conso_gross.html" width="75%" height="600"></iframe>
+            </p>
+            <h2>Fees incurred</h2>
+            <p>
+                Let's incorporate the actual execution fees incurred in real life with QRT pricing scale into the paper model.<br>
+                For the Emini SP, they have been about: F * 1.25bp * 60DayReturnVol% * 100 $ per contract.<br>
+                For the STOXX50, they have been about: F * 1.375bp * 60DayReturnVol% * 100 € per contract.<br>
+                As for October 30th 2024, the total fees paid to QRT have been 621000$.
+                <iframe src="fees.html" width="75%" height="600"></iframe>
+                <br> 
+            </p>
+            <h2>QRT Real vs model net of fees</h2>
+            <p>
+                The chart below impacts the gold paper curve with the actual fees incurred. <br>
+                We can notice that in early October
+                we still beat the paper model, even with fees amounting to 621k$.
+            <iframe src="qsec_conso_net.html" width="75%" height="600"></iframe><br>
+                Let's get visibility on one more point. The 13th of February 2024 is an outlier: it is a "cas d'ecole" of what I claim
+                I capture. <br>There are several factors under investigations as I write which yield a "faisceau de convergence" as to when a higher probability 
+                day might unfold.<br>
+                That particular Tuesday was one of those and I acted in consequence. In effect placing all the risk on the US markets, and from
+                Monday evening. <br>In hindsight, it was the optimal line of action.<br>
+                Let's override the QRT PL by the theoretical paper one, whic is almost half, and see what we have then.
+            </p>
+            <h2>QRT Real vs model net of fees and outlier removed</h2>
+            <p>
+                <iframe src="qsec_conso_net_valentine.html" width="75%" height="600"></iframe><br>
+            </p>
         </div>
-        <div class="chart-container">
-            <canvas id="accumulatedPlChart"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="cumulativeSharpeChart"></canvas>
-        </div>
-    </main>
-    <script src="js/realized-track-record.js"></script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const labels = [];
-        const theoreticalPL = [];
-        const realizedPL = [];
-
-        // Inline CSV data
-        const csvData = `
-    date,PL_theoretical,PL_realized
-    2024-01-03,0,0
-    2024-01-04,0,0
-    2024-01-05,0,0
-    2024-01-08,0,-24950
-    2024-01-09,25114.053257650936,26970
-    2024-01-10,0,0
-    2024-01-11,0,0
-    2024-01-12,0,0
-    2024-01-16,-67001.75251902154,-79680
-    2024-01-17,0,0
-    2024-01-18,0,0
-    2024-01-19,-0,0
-    2024-01-22,0,6780
-    2024-01-23,-4143.274037804436,-17040
-    2024-01-24,0,0
-    2024-01-25,0,0
-    2024-01-26,0,0
-    2024-01-29,-0,-25740
-    2024-01-30,-60858.28860621365,-46680
-    2024-01-31,0,0
-    2024-02-01,0,0
-    2024-02-02,-0,0
-    2024-02-05,0,-12760
-    2024-02-06,-125999.15114472678,-85340
-    2024-02-07,0,0
-    2024-02-08,-0,0
-    2024-02-09,-0,0
-    2024-02-12,0,37100
-    2024-02-13,334932.00021525053,616890
-    2024-02-14,0,0
-    2024-02-15,-0,0
-    2024-02-16,0,0
-    2024-02-20,33522.73219839848,10800
-    2024-02-21,-0,0
-    2024-02-22,0,0
-    2024-02-23,0,0
-    2024-02-26,0,8770
-    2024-02-27,-93123.39813315598,-121710
-    2024-02-28,0,0
-    2024-02-29,0,0
-    2024-03-01,-0,0
-    2024-03-04,0,18740
-    2024-03-05,205700.29579307127,263450
-    2024-03-06,-0,0
-    2024-03-07,-0,0
-    2024-03-08,0,0
-    2024-03-11,0,-28080
-    2024-03-12,-297825.7209844037,-234090
-    2024-03-13,0,0
-    2024-03-14,0,0
-    2024-03-15,0,0
-    2024-03-18,0,19300
-    2024-03-19,-208193.14161714358,-215490
-    2024-03-20,0,0
-    2024-03-21,0,0
-    2024-03-22,0,0
-    2024-03-25,0,-40
-    2024-03-26,15882.618743750732,-35770
-    2024-03-27,-0,0
-    2024-03-28,0,0
-    2024-04-02,170315.9498126207,96560
-    2024-04-03,0,0
-    2024-04-04,0,0
-    2024-04-05,0,0
-    2024-04-08,0,5610
-    2024-04-09,143142.57001246806,162970
-    2024-04-10,0,0
-    2024-04-11,0,0
-    2024-04-12,0,0
-    2024-04-15,0,-50660
-    2024-04-16,-65713.2557449666,-50680
-    2024-04-17,-0,0
-    2024-04-18,0,0
-    2024-04-19,0,0
-    2024-04-22,0,27570
-    2024-04-23,373300.68246620975,329360
-    2024-04-24,0,0
-    2024-04-25,0,0
-    2024-04-26,0,0
-    2024-04-29,0,-19300
-    2024-04-30,411403.6025397641,335470
-    2024-05-02,0,0
-    2024-05-03,0,0
-    2024-05-06,0,-15930
-    2024-05-07,109936.41860894098,-490
-    2024-05-08,0,0
-    2024-05-10,0,0
-    2024-05-13,0,290
-    2024-05-14,-95907.25908357321,-111740
-    2024-05-15,-0,0
-    2024-05-16,0,0
-    2024-05-17,0,0
-    2024-05-21,-29757.196912405845,-38710
-    2024-05-22,0,0
-    2024-05-23,0,0
-    2024-05-24,0,0
-    2024-05-28,119115.85954264647,115990
-    2024-05-29,0,0
-    2024-05-30,0,0
-    2024-05-31,0,0
-    2024-06-03,0,-4150
-    2024-06-04,-5645.98549939425,30490
-    2024-06-05,0,0
-    2024-06-06,0,0
-    2024-06-07,0,0
-    2024-06-10,0,2640
-    2024-06-11,-49086.404694432116,-37090
-    2024-06-12,0,0
-    2024-06-13,0,0
-    2024-06-14,0,0
-    2024-06-17,0,-18690
-    2024-06-18,36606.236627818405,-75650
-    2024-06-20,0,0
-    2024-06-21,0,0
-    2024-06-24,0,-9760
-    2024-06-25,-64723.81352464268,-62760
-    2024-06-26,-0,0
-    2024-06-27,0,0
-    2024-06-28,0,0
-    2024-07-01,0,15170
-    2024-07-02,-194781.19610952746,-242770
-    2024-07-03,0,0
-    2024-07-05,0,0
-    2024-07-08,0,7380
-    2024-07-09,160047.161740545,189170
-    2024-07-10,0,0
-    2024-07-11,0,0
-    2024-07-12,0,0
-    2024-07-15,0,9770
-    2024-07-16,-54722.126506889916,-95160
-    2024-07-17,0,0
-    2024-07-18,0,0
-    2024-07-19,0,0
-    2024-07-22,0,27180
-    2024-07-23,-22408.24240341431,-75580
-    2024-07-24,0,0
-    2024-07-25,-0,0
-    2024-07-26,0,0
-    2024-07-29,0,11350
-    2024-07-30,-111065.11213985036,-157820
-    2024-07-31,0,0
-    2024-08-02,0,0
-    2024-08-05,0,41210
-    2024-08-06,136299.45351048885,91060
-    2024-08-07,0,0
-    2024-08-08,0,0
-    2024-08-09,0,0
-    2024-08-12,0,3850
-    2024-08-13,280777.8122166267,248560
-    2024-08-14,0,0
-    2024-08-15,0,0
-    2024-08-16,0,0
-    2024-08-19,-0,-5830
-    2024-08-20,91935.82389443554,133070
-    2024-08-21,0,0
-    2024-08-22,0,0
-    2024-08-23,-0,0
-    2024-08-26,0,-1070
-    2024-08-27,-68627.13759853144,-68370
-    2024-08-28,0,0
-    2024-08-29,0,0
-    2024-08-30,0,0
-    2024-09-03,442373.5661366396,479870
-    2024-09-04,0,0
-    2024-09-05,0,0
-    2024-09-06,0,0
-    2024-09-09,0,17356
-    2024-09-10,-212510,-307217
-    2024-09-11,0,0
-    2024-09-12,0,0
-    2024-09-13,0,0
-    2024-09-16,0,38138
-    2024-09-17,115776,88549
-    2024-09-18,0,0
-    2024-09-19,0,0
-    2024-09-20,0,0
-    2024-09-23,0,-12273
-    2024-09-24,-80787,-116226
-    2024-09-25,0,0
-    2024-09-26,0,0
-    2024-09-27,0,0
-    2024-09-30,0,0
-    2024-10-01,336449,369000
-    2024-10-02,0,0
-    2024-10-03,0,0
-    2024-10-04,0,0
-    2024-10-07,0,0
-    2024-10-08,-46733,0
-    2024-10-09,0,0
-    2024-10-10,0,0
-    2024-10-11,0,0
-    2024-10-14,0,0
-    2024-10-15,488481,0
-    2024-10-16,0,0
-    2024-10-17,0,0
-    2024-10-18,0,0
-    2024-10-21,0,0
-    2024-10-22,-165305.4,0.4
-    2024-10-23,0,0
-    2024-10-25,0,0
-    `;
-
-        const rows = csvData.trim().split('\n').slice(1); // Skip header
-        rows.forEach(row => {
-            const cols = row.split(',');
-            labels.push(new Date(cols[0]));
-            theoreticalPL.push(parseFloat(cols[1]));
-            realizedPL.push(parseFloat(cols[2]));
-        });
-
-        // First chart: Theo vs Realized
-        const ctx = document.getElementById('plChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Theoretical PL',
-                        data: theoreticalPL,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        fill: false
-                    },
-                    {
-                        label: 'Realized PL',
-                        data: realizedPL,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {
-                                day: 'yyyy-MM-dd'
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Second chart: Cumulative Theo vs Realized
-        const cumulativeTheoPL = [];
-        const cumulativeRealizedPL = [];
-        let cumulativeTheo = 0;
-        let cumulativeRealized = 0;
-        for (let i = 0; i < theoreticalPL.length; i++) {
-            cumulativeTheo += theoreticalPL[i];
-            cumulativeRealized += realizedPL[i];
-            cumulativeTheoPL.push(cumulativeTheo);
-            cumulativeRealizedPL.push(cumulativeRealized);
-        }
-
-        const ctxAccumulated = document.getElementById('accumulatedPlChart').getContext('2d');
-        new Chart(ctxAccumulated, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Cumulative Theoretical PL',
-                        data: cumulativeTheoPL,
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        fill: false
-                    },
-                    {
-                        label: 'Cumulative Realized PL',
-                        data: cumulativeRealizedPL,
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {
-                                day: 'yyyy-MM-dd'
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Third chart: Cumulative Sharpe Ratio
-        const cumulativeSharpe = [];
-        const realizedMean = [];
-        const realizedStdev = [];
-
-        // Helper function to calculate mean
-        function calculateMean(arr) {
-            const sum = arr.reduce((acc, value) => acc + value, 0);
-            return sum / arr.length;
-        }
-
-        // Helper function to calculate standard deviation
-        function calculateStdev(arr) {
-            const mean = calculateMean(arr);
-            const squareDiffs = arr.map(value => Math.pow(value - mean, 2));
-            const avgSquareDiff = calculateMean(squareDiffs);
-            return Math.sqrt(avgSquareDiff);
-        }
-
-        for (let i = 1; i <= realizedPL.length; i++) {
-            const subset = realizedPL.slice(0, i);
-            const mean = calculateMean(subset);
-            const stdev = calculateStdev(subset);
-
-            realizedMean.push(mean);
-            realizedStdev.push(stdev);
-
-            const sharpeRatio = (mean * 16) / (stdev || 1); // Prevent division by zero
-            cumulativeSharpe.push(sharpeRatio);
-        }
-
-        const ctxSharpe = document.getElementById('cumulativeSharpeChart').getContext('2d');
-        new Chart(ctxSharpe, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Realized Sharpe Ratio',
-                        data: cumulativeSharpe,
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {
-                                day: 'yyyy-MM-dd'
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-    });
-    </script>
+    </div>
 </body>
 </html>
+
