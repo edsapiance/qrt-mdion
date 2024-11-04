@@ -1,32 +1,31 @@
+/* Import Google Quicksand font */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap');
+
 /* General styling */
 body {
-    font-family: 'Radley', serif;
+    font-family: 'Quicksand', sans-serif; /* Set font to Quicksand */
     margin: 0;
-    background-color: #f4f4f4;
-    color: #36a9e0; /* Blue font color */
+    background-color: #000; /* Black background */
+    color: #f4f4f4; /* Light shade of white for readability */
     display: flex;
     height: 100vh;
     flex-direction: row;
+    font-size: 16px; /* Set default font size */
 }
 
 /* Sidebar for navigation */
 .sidebar {
-    background-color: #1a0e58;
-    color: #36a9e0;
+    background-color: #1a1a1a; /* Dark gray for visibility */
+    color: #f4f4f4;
     width: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     padding: 20px 0;
 }
 
 .sidebar .logo {
     font-size: 24px;
     font-weight: bold;
-    font-family: 'Fraunces', serif;
     margin-bottom: 20px;
     text-align: center;
-    width: 100%;
 }
 
 .sidebar ul {
@@ -36,94 +35,56 @@ body {
 }
 
 .sidebar ul li {
-    text-align: left;
+    text-align: center;
+    margin: 10px 0;
 }
 
 .sidebar ul li a {
-    color: #36a9e0;
+    color: #f4f4f4;
     text-decoration: none;
     font-size: 16px;
-    display: block;
     padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
+    display: block;
 }
 
 .sidebar ul li a:hover {
-    background-color: #231670;
-}
-
-.sidebar button {
-    background-color: #fff;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.sidebar button:hover {
-    background-color: #ccc;
+    background-color: #333;
 }
 
 /* Main content */
 .content {
     padding: 20px;
     width: calc(100% - 200px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     overflow-y: auto;
+    text-align: left; /* Left-align content by default */
 }
 
 .content h1 {
     font-size: 28px;
     margin-bottom: 15px;
-    font-family: 'Fraunces', serif;
+    text-align: center; /* Center-align all h1 headers */
+    font-weight: 500;
 }
 
-/* Chart container */
-.chart-container {
-    background-color: #fff;
-    border: 1px solid #ccc;
+.content h2, .content p, .content li, .content a {
+    color: #f4f4f4;
+    text-align: left; /* Left-align other text elements */
+}
+
+.content a {
+    color: #36a9e0;
+}
+
+footer {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+}
+
+/* Highlights for different sections */
+.highlight {
+    background-color: #333; /* Dark grey for highlighted sections */
     padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 800px;
-    min-height: 400px;
+    border-left: 5px solid #36a9e0; /* Accent color for borders */
     margin-bottom: 20px;
-}
-
-/* Canvas styling */
-canvas {
-    width: 100% !important;
-    height: auto !important;
-    margin: 0 auto;
-    max-width: 800px;
-    min-height: 400px;
-}
-
-/* Form input adjustments */
-#statistics input, #analysis input {
-    margin: 5px 0;
-    padding: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#statsOutput p, #analysis ul {
-    margin: 5px 0;
-}
-
-#analysis ul {
-    list-style: none;
-    padding: 0;
-}
-
-#analysis ul li {
-    margin: 5px 0;
 }

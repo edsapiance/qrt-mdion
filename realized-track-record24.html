@@ -3,22 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <title>Realized Track Record 2024</title>
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .content {
-    margin-left: 0px; /* Aligns with the sidebar width */
-    padding: 20px;
-    max-width: 100%; /* Allow full width within its container */
-}
-
-        .container {
-    width: 100%; /* Expands the container */
-    padding: 20px;
-}
-    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -26,29 +12,40 @@
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="realized-track-record24.html">Realized Track 2024</a></li>
-            <li><a href="keys.html" style="color: #FFFF00; font-weight: bold;">KEY POINTS</a></li>
+            <li><a href="keys.html" style="color: gold; font-weight: bold;">KEY POINTS</a></li>
             <li><a href="cv.html">CV</a></li>
         </ul>
     </div>
 
     <div class="content">
-        <h1 style="text-align: center;">Realized Track Record 2024</h1>
-        <div class="container">
-            <!-- NET Real vs Net Model Section -->
+        <h1>Realized Track Record 2024</h1>
+        
+        <section>
             <h2>NET Real vs Net Model</h2>
-            <p>
-                PL volatility allocated: 2$ million per Year <br>
+            <p> Notional Amount under Management 20$ million<br>
+                PL volatility allocated: 2$ million per Year<br>
                 Realised PL volatility annualised: 1.5$ million<br>
-                NET Sharpe Ratio 2024 : 1.8*(12/10)/1.5 => 1.44
-            </p>
-            <iframe src="qsec_2024_net.html" width="70%" height="600" style="border: none;"></iframe>
-            <h2>Rolling 60day Sharpe Ratio</h2>
-            <iframe src="rolling_S.html" width="70%" height="600" style="border: none;"></iframe>
-            <h2>Gross Paper Model [ 2020 , 2024 ]</h2>
-            <iframe src="paper_gross.html" width="70%" height="600" style="border: none;"></iframe>
-        </div>
+                NET Sharpe Ratio 2024 : 1.8*(12/10)/1.5 => 1.44</p>
+            <div>
+                <iframe src="track2024.html" width="800px" height="600px" frameBorder="0"></iframe>
+            </div>
+        </section>
+
+        <section>
+            <h2>PL volatility</h2>
+            <p></p>
+            <div>
+                <iframe src="volPL2024.html" width="800px" height="600px" frameBorder="0"></iframe>
+            </div>
+        </section>
+
+        <section>
+            <h2>Sharpe Ratio</h2>
+            <p></p>
+            <div>
+                <iframe src="SRPL2024.html" width="800px" height="600px" frameBorder="0"></iframe>
+            </div>
+        </section>
     </div>
 </body>
 </html>
-
-

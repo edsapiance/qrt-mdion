@@ -7,115 +7,197 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
-    <style>
-        body {
-            background-color: #f4f4f4; /* White background to match the p5.js sketch */
-            color: #000000; /* Adjust text color if needed for better contrast */
-        }
-        #sketch-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 90vh; /* Increase height for a larger sketch */
-        }
-    </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo">CONTENTS</div>
         <ul>
             <li><a href="index.html">Home</a></li>			
-			<li><a href="realized-track-record24.html">Realized Track 2024</a></li>
-			<li><a href="keys.html" style="color: #FFFF00; font-weight: bold;">KEY POINTS</a></li>
-			<li><a href="cv.html">CV</a></li>
+            <li><a href="realized-track-record24.html">Realized Track 2024</a></li>
+            <li><a href="keys.html" style="color: gold; font-weight: bold;">KEY POINTS</a></li>
+            <li><a href="cv.html">CV</a></li>
         </ul>
     </div>
-    <div class="content">
-        <h1 style="color: #36a9e0;">QTRs => Quant Total Return systems</h1>
-		<p style="color: #36a9e0; font-weight: bold;">Framework For Effective Strategic Partnership</p>
 
-        <!-- Move sketch below the paragraph -->
+    <div class="content">
+        <h1><span style="color: gold;"><i>SPIRE</i></span> => Strategic Portfolio Index Return Engine</h1>
+        <p style="text-align: center;">Framework For Effective Strategic Partnership</p>
+        <h1>
         <div id="sketch-container">
             <!-- The sketch will be rendered here -->
         </div>
+        </h1>
     </div>
 
     <script>
-       const framesToRecord = 721
-const makeVid = false
+        //
+// From Casey Reas' discussion in https://vimeo.com/22955812
+//
 
-let capturer
-let capturing = false
-let thisCanvas
+class E1 {
+  constructor (x, y, r, dir = null) {
+    this.pos = createVector(x,y);
+    this.dir = dir;
+    if (!dir) {
+      this.dir = createVector(speed,0);
+      this.dir.rotate(random(TWO_PI))
+    }
+    this.r = r
+  } 
+  move () {
+    // B1 - move in straight line
+    // Addition: perform direction jitter
+    this.pos.add(this.dir); 
+    this.dir.rotate(random( ...directionJitter))
+  }
+  constrain () {
+    // B2 - constrain to surface
+    let r = this.r;
+    let x = constrain (this.pos.x, r, width-r)
+    let y = constrain (this.pos.y, r, height-r)
+    if (x != this.pos.x || y != this.pos.y) {
+      this.pos.x = x;
+      this.pos.y = y;
+      this.dir.rotate(random(TWO_PI))
+    }
+  }
+  inCircle (cx, cy, r) {
+    return dist(cx,cy,this.pos.x,this.pos.y) <= r+this.r 
+  }
+  penetration (other) {
+    let d = this.pos.dist(other.pos);
+    let td = this.r + other.r; 
+    return td - d;
+  }
+  interact (other) {
+    let pen = this.penetration(other);
+    if (abs (pen) < minR*touchRatio) {
+      // Change direction if touching another element
+      this.dir.rotate(radians(0.1))
+    } else 
+      if (pen>0) {
+      // Move away from overlapping elem
+      let v =this.pos.copy().sub(other.pos).setMag(speed);
+      this.dir = v;
+      // let n = other.pos.copy().sub(this.pos).normalize();
+      // this.dir.reflect(n)
+    }
+  }  
+  draw () {
+    circle (this.pos.x, this.pos.y, this.r*2)
+    let p = this.pos.copy()
+    let q = p.copy().add(this.dir.copy().setMag(this.r));
+    line (p.x, p.y, q.x, q.y)
+  }
+}
+
+let n = 300;
+let speed = 0.5;
+let touchRatio = 0.1;
+let drawRatio = 3;
+let creationSpread = 0.8;
+let colorRatioPwr = 0.5;
+let directionJitter = [0, 0.05];
+let mode = "picture";
+let circleAreaRatio = 20;
+let centerX, centerY, R; 
+let elements = [];
+let minR, maxR;
+
+function randomElement () {
+  let dir = createVector(1, 0);
+  dir.rotate(random(TWO_PI));
+  let v = dir.copy().mult(random(R*creationSpread))
+  v.add(createVector(centerX, centerY));
+  return new E1(v.x, v.y, random(minR,maxR), dir.mult(speed));
+}
 
 function setup() {
-	capturer = new CCapture( { format: 'webm' } )
-	
-	//thisCanvas = createCanvas(512, 512, WEBGL)
-    mySize = min(windowWidth, windowHeight);
-    margin = mySize / 100;
-    thisCanvas = createCanvas(windowWidth, windowHeight * 1.0, WEBGL);
+    thisCanvas = createCanvas(windowWidth/2, windowHeight/2);
     thisCanvas.parent('sketch-container');
-	ortho(-width / 2, width / 2, height / 2, -height / 2, -1200, 2048)
-	// perspective()
-	angleMode(DEGREES)
-	strokeWeight(1)
+    generate();
+}
+
+function generate() {
+  R = min(width,height) / 2;
+  let area = PI * R**2;
+	n = floor(random(100,400));
+	circleAreaRatio = random(2,30);
+  let avgCircleArea = area / n;
+  let minCircleArea = 2 * avgCircleArea / (circleAreaRatio+1);
+  minR = sqrt(minCircleArea)/PI;
+  maxR = sqrt(minCircleArea*circleAreaRatio)/PI; 
+  centerX = width/2;
+  centerY = height/2;
+	elements = [];
+  for (let i = 0; i < n; i++) {
+    elements.push (randomElement());
+  }
+  background(0)
+}
+
+function mouseClicked() {
+	generate()
+}
+
+function keyPressed() {
+  if (mode == "elements") {
+    mode = "picture"
+  }
+  else {
+    mode = "elements"
+  }
+  background(0)
 }
 
 function draw() {
-	if (!capturing && makeVid) {
-		capturer.start()
-		capturing = true
-	}
-	const myVal = frameCount
-	
-	background(244)
-	pointLight(255, 255, 255, width / 2, height / 2, width / 2);
-	pointLight(255, 255, 255, width / 2, height / 2, -width / 2);
-	ambientLight(90)
-
-	rotateX(45)
-	rotateY(45)
-	const cubeCount = 5
-	
-	//gridStep = 20
-	//const offsetScale = map(cos(frameCount / 2), 1, -1, 30, 180)
-    gridStep = 40; // Double the previous gridStep of 20
-    const offsetScale = map(cos(frameCount / 2), 1, -1, 60, 360); // Adjust the scale to match the larger gridStep
-
-	
-	for (let x = -cubeCount; x <= cubeCount; x += 1) {
-		for (let y = -cubeCount; y <= cubeCount; y += 1) {
-			for (let z = -cubeCount; z <= cubeCount; z += 1) {
-				if (x === -cubeCount || y === cubeCount || z === cubeCount) {
-					const realX = x * gridStep
-					const realY = y * gridStep
-					const realZ = z * gridStep
-					push()
-					translate(realX, realY, realZ)
-					// Set the fill color to blue
-					fill(54, 169, 224);
-					const xSize = map(x, -cubeCount, cubeCount, 0, offsetScale)
-					const ySize = map(y, -cubeCount, cubeCount, 0, offsetScale)
-					const zSize = map(z, -cubeCount, cubeCount, 0, offsetScale)
-					const sizeFactor = map(cos((frameCount * 2) + (xSize + ySize + zSize)), 1, -1, 0, 1)
-
-					box(gridStep * sizeFactor)
-					pop()
-				}
-			}
-		}
-	}
-	
-	if (makeVid) {
-		capturer.capture(thisCanvas.canvas)
-
-		if (frameCount === framesToRecord) {
-			capturer.stop();
-			capturer.save();
-		}
-	}
+  simulate();
+  if (mode == "elements") renderElements()
+  else renderPicture()
 }
+
+function renderElements() { 
+  background(0)
+  stroke(0)
+  for (let e of elements) e.draw()
+}
+ 
+function renderPicture () {
+  for (let i = 0; i < n; i++) {
+    let a = elements[i];
+    for (let j = i+1; j < n; j++) {
+      let b = elements[j];
+      if (abs(a.penetration(b)) < minR * drawRatio) {
+        stroke(map ((a.r+b.r)**colorRatioPwr, 
+                    (2*minR)**colorRatioPwr, 
+                    (2*maxR)**colorRatioPwr, 0, 255),20)
+        line (a.pos.x, a.pos.y, b.pos.x, b.pos.y)
+      }
+    }
+  }  
+}
+
+function simulate() {
+  let newElements = [];
+  for (let e of elements) {
+    e.move();
+    if (e.inCircle(centerX, centerY, R)) 
+      newElements.push (e)
+    else
+      newElements.push (randomElement())
+  }
+  elements = newElements;
+  n = elements.length;
+  for (let i = 0; i < n; i++) {
+    let a = elements[i];
+    for (let j = i+1; j < n; j++) {
+      let b = elements[j];
+      a.interact(b);
+      b.interact(a);
+    }
+  }  
+}
+
     </script>
 </body>
 </html>
