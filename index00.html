@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRT</title>
+    <title>SPIRE</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
@@ -13,9 +13,12 @@
         <div class="logo">CONTENTS</div>
         <ul>
             <li><a href="index.html">Home</a></li>			
-            <li><a href="realized-track-record24.html">Realized Track 2024</a></li>
+            <li><a href="realized-track-record24.html">Realized Track 2024-2025</a></li>
             <li><a href="keys.html" style="color: gold; font-weight: bold;">KEY POINTS</a></li>
             <li><a href="cv.html">CV</a></li>
+            <li><a href="https://edophi314.github.io/CriticalFeedbackMonth1/dophi-Q2.html"  target="_blank">Setup 2023-09<br>
+              <i style="font-size: xx-small;">[Opens in a new browser window]</i>
+            </a></li>
         </ul>
     </div>
 
@@ -168,10 +171,10 @@ function renderPicture () {
     for (let j = i+1; j < n; j++) {
       let b = elements[j];
       if (abs(a.penetration(b)) < minR * drawRatio) {
-         // Set stroke to golden color with slight brightness variation
-         let brightness = map((a.r + b.r) ** colorRatioPwr, (2 * minR) ** colorRatioPwr, (2 * maxR) ** colorRatioPwr, 150, 255);
-        stroke(brightness, brightness * 0.843, 0, 30); // RGB for a golden shade with slight transparency
-        line(a.pos.x, a.pos.y, b.pos.x, b.pos.y);
+        stroke(map ((a.r+b.r)**colorRatioPwr, 
+                    (2*minR)**colorRatioPwr, 
+                    (2*maxR)**colorRatioPwr, 0, 255),20)
+        line (a.pos.x, a.pos.y, b.pos.x, b.pos.y)
       }
     }
   }  
