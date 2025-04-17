@@ -33,49 +33,54 @@
     </div>
 
     <script>
-      function setup() {
-        thisCanvas = createCanvas(windowWidth/2, windowHeight/2, WEBGL);
-        thisCanvas.parent('sketch-container');
-	      ortho();
-	      smooth(8);
+      var ns = 0.1;
+      var rx,ry,rz;
+        
+
+function setup() {
+    thisCanvas = createCanvas(windowWidth/2, windowHeight/2, WEBGL);
+    thisCanvas.parent('sketch-container');
+    rx = ry = rz = 0;
 }
-t = 0;
-function draw() {
-	t += .005;
-	t %= 1;
-	background(0);
-	rotateX(-PI/4);
-  rotateY(PI/4);
-  strokeWeight(1.5);
-  for(x = -100; x <= 100; x+= 50)
-  for(y = -100; y <= 100; y+= 50)
-  for(z = -100; z <= 100; z+= 50){
+
+
+function draw()
+{
+  background(0);
+    // Move the camera back to zoom out
+    let zoom = 2; // Try values > 1 to zoom out, like 1.5 or 2
+  camera(0, 0, (height / 2.0) * zoom, 0, 0, 0, 0, 1, 0);
+  
+  var N = 7;
+  
+  //translate(width/2, height/2, 0);
+  
+  rx += 0.01*noise(1, 0.005*ns*millis());
+  ry += 0.01*noise(2, 0.005*ns*millis());
+  rz += 0.01*noise(3, 0.005*ns*millis());
+  
+  rotateX(rx);
+  rotateY(ry);
+  rotateZ(rz);
+
+  //float D = 0.05*noise(0.005*ns*(millis() + 0));
+  
+  for(var i = 0; i < N; i++)
+  for(var j = 0; j < N; j++)
+  for(var k = 0; k < N; k++)
+  {
+    var loc = i*N*N + j*N + k;
+    var d = 0 + 0.1*noise(loc, 0.005*ns*(millis() + 10));
+    var n = 0.1 + 4*noise(loc, 0.005*ns*(millis() + 20));
+    
     push();
-    d = constrain(dist(0,0,0,x,y,z)/dist(100,100,100,0,0,0),0,.8);
-    translate(x,y,z);
-		
-		numTransition = 3;
-		
-		tt = easeInOutQuart((numTransition * t) % 1);
-		ff = floor(numTransition * t);
-		
-    boxDim = 25+25*sin(TAU/numTransition * (ff + tt + numTransition * d));
-    stroke(255);
-    fill(0);
-    box(boxDim);    
-    translate(0, -boxDim/2, 0);
-    fill(255);
-    noStroke();
-    box(boxDim, 2, boxDim);   
+    translate((i-N/2)*width*d, (j-N/2)*height*d, (k-N/2)*width*d);
+    fill(255*i/N, 255*j/N, 255*k/N);
+    box(10*n);
     pop();
   }
-	
 }
 
-function easeInOutQuart(x){
-return x < 0.5 ? 8 * x * x * x * x : 1 - pow(-2 * x + 2, 4) / 2;
-
-}
     </script>
 </body>
 </html>
